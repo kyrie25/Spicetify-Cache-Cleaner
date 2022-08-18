@@ -1,5 +1,5 @@
 {
-    "name": "Spicetify Cache Cleaner",
+    "name": "Cache Cleaner",
     "description": "Automatically clear Spotify cache after a time and/or threshold is surpassed.",
     "preview": "screenshot.png",
     "main": "cacheCleaner.js",

@@ -359,6 +359,7 @@
                         info: "Notify when cache is cleared automatically",
                         key: "notify",
                         type: ConfigSlider,
+                        when: () => config.enabled,
                     },
                     {
                         desc: "Frequency",
@@ -372,12 +373,14 @@
                             weekly: "After a week",
                             monthly: "After a month",
                         },
+                        when: () => config.enabled,
                     },
                     {
                         desc: "Size threshold (MB)",
                         info: "Clear cache when it reaches this size (0 to disable)",
                         key: "threshold",
                         type: ConfigInput,
+                        when: () => config.enabled,
                     },
                 ],
                 onChange: (name, value) => {

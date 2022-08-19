@@ -2,7 +2,7 @@
 /// <reference types="react" />
 /// <reference path="./globals.d.ts" />
 (async function cacheCleaner() {
-    if (!Spicetify.Platform?.Offline?.getStats || !Spicetify.Platform?.Offline?.deleteCachedFiles) {
+    if (!Spicetify.Platform?.Offline?.getStats || !Spicetify.Platform?.Offline?.deleteCachedFiles || !Spicetify.Platform?.Offline?._storageService?.deleteUnlockedItems) {
         setTimeout(cacheCleaner, 500);
         return;
     }
@@ -35,17 +35,15 @@
         localStorage.setItem("spicetify-cache-cleaner:config", JSON.stringify(config));
     }
 
-    async function clearCache() {
+    async function clearCache(startup = false) {
         const stats = await Spicetify.Platform.Offline.getStats();
-        let cacheCleaned = Number(stats.currentSize),
-            attempted = false;
+        let cacheCleaned = Number(stats.currentSize);
 
         async function showNotification() {
             await Spicetify.Platform.Offline.getStats().then(async (stats) => {
-                if (cacheCleaned - Number(stats.currentSize) === 0 && !attempted) {
+                if (cacheCleaned - Number(stats.currentSize) <= 0 && startup) {
                     // Double check if size has been reduced
-                    setTimeout(showNotification, 5000);
-                    attempted = true;
+                    setTimeout(() => clearCache(startup), 2500);
                     return;
                 }
                 cacheCleaned = cacheCleaned - Number(stats.currentSize);
@@ -56,22 +54,6 @@
         await Spicetify.Platform.Offline.deleteCachedFiles()
             .then(showNotification)
             .catch((e) => console.error(e));
-    }
-
-    if (config.enabled) {
-        const stats = await Spicetify.Platform.Offline.getStats();
-        const threshold = Number(config.threshold);
-
-        if (isNaN(threshold)) Spicetify.showNotification("Invalid threshold value, please enter a number");
-
-        // Prioritize clearing cache if it's above threshold
-        if (!isNaN(threshold) && threshold > 0 && Number(stats.currentSize) > threshold) {
-            clearCache();
-        } else if (config.time > 0 && Date.now() - config.time > 0) {
-            clearCache();
-            config.time = Date.now() + time[config.frequency];
-            localStorage.setItem("spicetify-cache-cleaner:config", JSON.stringify(config));
-        }
     }
 
     const styling = `.setting-row::after {
@@ -421,4 +403,20 @@
     }
 
     new Spicetify.Menu.Item("Cache config", false, openModal).register();
+
+    if (config.enabled) {
+        const stats = await Spicetify.Platform.Offline.getStats();
+        const threshold = Number(config.threshold);
+
+        if (isNaN(threshold)) Spicetify.showNotification("Invalid threshold value, please enter a number");
+
+        // Prioritize clearing cache if it's above threshold
+        if (!isNaN(threshold) && threshold > 0 && Number(stats.currentSize) > threshold) {
+            await clearCache(true);
+        } else if (config.time > 0 && Date.now() - config.time > 0) {
+            await clearCache(true);
+            config.time = Date.now() + time[config.frequency];
+            localStorage.setItem("spicetify-cache-cleaner:config", JSON.stringify(config));
+        }
+    }
 })();

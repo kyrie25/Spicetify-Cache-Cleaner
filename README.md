@@ -6,6 +6,9 @@ Executes on startup.
 **Only works on Spotify `1.1.92` and above.**
 Latest tested working version: `1.1.92.647`.
 
+
+[![Github Stars badge](https://img.shields.io/github/stars/kyrie25/Spicetify-Cache-Cleaner?logo=github&style=social)](https://github.com/kyrie25/Spicetify-Cache-Cleaner)
+
 ## Install
 
 Copy `cacheCleaner.js` into your [Spicetify](https://github.com/spicetify/spicetify-cli) extensions directory:

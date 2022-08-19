@@ -21,19 +21,12 @@
     // Date enum in milliseconds
     const time = { launch: 0, daily: 24 * 60 * 60 * 1000, weekly: 24 * 60 * 60 * 1000 * 7, monthly: 30 * 24 * 60 * 60 * 1000 };
 
-    if (config.enabled === undefined) {
-        config.enabled = true;
-        localStorage.setItem("spicetify-cache-cleaner:config", JSON.stringify(config));
-    }
-    if (config.frequency === undefined) {
-        config.frequency = "weekly";
-        config.time = Date.now() + time[config.frequency];
-        localStorage.setItem("spicetify-cache-cleaner:config", JSON.stringify(config));
-    }
-    if (config.threshold === undefined) {
-        config.threshold = 0;
-        localStorage.setItem("spicetify-cache-cleaner:config", JSON.stringify(config));
-    }
+    config.enabled = config.enabled ?? true;
+    config.notify = config.notify ?? true;
+    config.frequency = config.frequency ?? "weekly";
+    config.time = config.time ?? Date.now() + time[config.frequency];
+    config.threshold = config.threshold ?? 0;
+    localStorage.setItem("spicetify-cache-cleaner:config", JSON.stringify(config));
 
     async function clearCache(purge = false) {
         const stats = await Spicetify.Platform.Offline.getStats();
@@ -47,7 +40,8 @@
                     return;
                 }
                 cacheCleaned = cacheCleaned - Number(stats.currentSize);
-                Spicetify.showNotification(`Cleared ${cacheCleaned} MB of cache`);
+                if (config.notify || !purge)
+                    Spicetify.showNotification(`Cleared ${cacheCleaned} MB of cache`);
             });
         }
 
@@ -331,7 +325,7 @@
                         onClick: async () => {
                             await clearCache();
                             await Spicetify.Platform.Offline.getStats().then((stats) => {
-                                setCacheSize(stats.currentSize);
+                                setCacheSize(`${stats.currentSize} MB`);
                             });
                         },
                     },
@@ -358,6 +352,12 @@
                         desc: "Enable",
                         info: "Enable automatic cache cleaning",
                         key: "enabled",
+                        type: ConfigSlider,
+                    },
+                    {
+                        desc: "Show notification",
+                        info: "Notify when cache is cleared automatically",
+                        key: "notify",
                         type: ConfigSlider,
                     },
                     {
@@ -408,7 +408,11 @@
         const stats = await Spicetify.Platform.Offline.getStats();
         const threshold = Number(config.threshold);
 
-        if (isNaN(threshold)) Spicetify.showNotification("Invalid threshold value, please enter a number");
+        if (isNaN(threshold)) {
+            Spicetify.showNotification("Invalid threshold value, please enter a number");
+            config.threshold = 0;
+            localStorage.setItem("spicetify-cache-cleaner:config", JSON.stringify(config));
+        }
 
         // Prioritize clearing cache if it's above threshold
         if (!isNaN(threshold) && threshold > 0 && Number(stats.currentSize) > threshold) {

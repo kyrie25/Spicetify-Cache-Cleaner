@@ -1,0 +1,7 @@
+# NPM stuff
+node_modules
+package-lock.json
+package.json
+
+# Spicetify type declaration file
+globals.d.ts

@@ -35,15 +35,15 @@
         localStorage.setItem("spicetify-cache-cleaner:config", JSON.stringify(config));
     }
 
-    async function clearCache(startup = false) {
+    async function clearCache(purge = false) {
         const stats = await Spicetify.Platform.Offline.getStats();
         let cacheCleaned = Number(stats.currentSize);
 
         async function showNotification() {
-            await Spicetify.Platform.Offline.getStats().then(async (stats) => {
-                if (cacheCleaned - Number(stats.currentSize) <= 0 && startup) {
+            await Spicetify.Platform.Offline.getStats().then((stats) => {
+                if (cacheCleaned - Number(stats.currentSize) <= 0 && purge) {
                     // Double check if size has been reduced
-                    setTimeout(() => clearCache(startup), 2500);
+                    setTimeout(() => clearCache(purge), 2500);
                     return;
                 }
                 cacheCleaned = cacheCleaned - Number(stats.currentSize);
@@ -302,7 +302,7 @@
         useEffect(() => {
             Spicetify.Platform.Offline.getStats()
                 .then((stats) => {
-                    setCacheSize(stats.currentSize);
+                    setCacheSize(`${stats.currentSize} MB`);
                 })
                 .catch((e) => console.error(e));
         }, []);
@@ -317,7 +317,7 @@
                 {
                     className: "col description",
                 },
-                `Cache size: ${cacheSize} MB`
+                `Cache size: ${cacheSize}`
             ),
             react.createElement(
                 "div",

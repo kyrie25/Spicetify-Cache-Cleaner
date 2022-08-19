@@ -43,7 +43,7 @@
             await Spicetify.Platform.Offline.getStats().then((stats) => {
                 if (cacheCleaned - Number(stats.currentSize) <= 0 && purge) {
                     // Double check if size has been reduced
-                    setTimeout(() => clearCache(purge), 2500);
+                    setTimeout(() => clearCache(purge), 500);
                     return;
                 }
                 cacheCleaned = cacheCleaned - Number(stats.currentSize);

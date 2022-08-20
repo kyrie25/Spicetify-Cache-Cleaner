@@ -49,6 +49,7 @@ Configuration format
 | **Key** | **Values** |
 |------------|------------------------------------------------------------------------------------------|
 | `enabled` | Boolean value. Define whether the extension is allowed to run or not. |
+| `notify` | Boolean value. Define whether notification is shown when cache is cleared automatically. |
 | `frequency` | Option value. Can be either `never`, `daily`, `weekly`, or `monthly`. |
 | `threshold` | Input value. Defined in `MB`. Cache is automatically cleared when this value is met. `0` to disable this function. |
 | `time` | Snowflake value. Is automatically assigned based on frequency and execution time. |
@@ -57,10 +58,11 @@ By default, it will have these values:
 
 ```js
 {
-    "enabled": true,
-    "frequency": "weekly",
-    "threshold": "0",
-    "time": 0 // Precisely a week after the extension is first installed.
+    enabled: true,
+    notify: true,
+    frequency: "weekly",
+    threshold: "0",
+    time: 0 // Precisely a week after the extension is first installed.
 }
 ```
 

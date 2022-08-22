@@ -3,9 +3,7 @@
 [Spicetify](https://github.com/spicetify/spicetify-cli) extension to automatically clear Spotify cache.
 Executes on startup.
 
-**Only works on Spotify `1.1.92` and above.**
-Latest tested working version: `1.1.92.647`.
-
+**Only works on Spotify `1.1.92`, Spicetify `2.12.0` and above.**
 
 [![Github Stars badge](https://img.shields.io/github/stars/kyrie25/Spicetify-Cache-Cleaner?logo=github&style=social)](https://github.com/kyrie25/Spicetify-Cache-Cleaner)
 

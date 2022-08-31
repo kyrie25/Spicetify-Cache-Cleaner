@@ -2,7 +2,7 @@
 /// <reference types="react" />
 /// <reference path="./globals.d.ts" />
 (async function cacheCleaner() {
-    if (!Spicetify.Platform?.Offline?.getStats || !Spicetify.Platform?.Offline?.deleteCachedFiles) {
+    if (!Spicetify.Platform.OfflineAPI._storage.getStats || !Spicetify.Platform.OfflineAPI._storage.deleteUnlockedItems) {
         setTimeout(cacheCleaner, 500);
         return;
     }
@@ -29,11 +29,11 @@
     localStorage.setItem("spicetify-cache-cleaner:config", JSON.stringify(config));
 
     async function clearCache(purge = false) {
-        const stats = await Spicetify.Platform.Offline.getStats();
+        const stats = await Spicetify.Platform.OfflineAPI._storage.getStats();
         let cacheCleaned = Number(stats.currentSize);
 
         async function showNotification() {
-            await Spicetify.Platform.Offline.getStats().then((stats) => {
+            await Spicetify.Platform.OfflineAPI._storage.getStats().then((stats) => {
                 if (cacheCleaned - Number(stats.currentSize) <= 0 && purge) {
                     // Double check if size has been reduced
                     setTimeout(() => clearCache(purge), 500);
@@ -45,7 +45,7 @@
             });
         }
 
-        await Spicetify.Platform.Offline.deleteCachedFiles()
+        await Spicetify.Platform.OfflineAPI._storage.deleteUnlockedItems()
             .then(showNotification)
             .catch((e) => console.error(e));
     }
@@ -294,7 +294,7 @@
         const [cacheSize, setCacheSize] = useState("Fetching...");
 
         useEffect(() => {
-            Spicetify.Platform.Offline.getStats()
+            Spicetify.Platform.OfflineAPI._storage.getStats()
                 .then((stats) => {
                     setCacheSize(`${stats.currentSize} MB`);
                 })
@@ -324,7 +324,7 @@
                         className: "clear-cache",
                         onClick: async () => {
                             await clearCache();
-                            await Spicetify.Platform.Offline.getStats().then((stats) => {
+                            await Spicetify.Platform.OfflineAPI._storage.getStats().then((stats) => {
                                 setCacheSize(`${stats.currentSize} MB`);
                             });
                         },
@@ -408,7 +408,7 @@
     new Spicetify.Menu.Item("Cache config", false, openModal).register();
 
     if (config.enabled) {
-        const stats = await Spicetify.Platform.Offline.getStats();
+        const stats = await Spicetify.Platform.OfflineAPI._storage.getStats();
         const threshold = Number(config.threshold);
 
         if (isNaN(threshold)) {

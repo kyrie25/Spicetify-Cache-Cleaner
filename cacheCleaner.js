@@ -2,7 +2,7 @@
 /// <reference types="react" />
 /// <reference path="./globals.d.ts" />
 (async function cacheCleaner() {
-    if (!Spicetify.Platform.OfflineAPI._storage.getStats || !Spicetify.Platform.OfflineAPI._storage.deleteUnlockedItems) {
+    if (!Spicetify.Platform?.OfflineAPI?._storage?.getStats || !Spicetify.Platform?.OfflineAPI?._storage?.deleteUnlockedItems) {
         setTimeout(cacheCleaner, 500);
         return;
     }

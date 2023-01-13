@@ -173,6 +173,7 @@
                     className: "col action",
                 },
                 react.createElement("input", {
+                    type: "number",
                     value,
                     onChange: setValueCallback,
                 })

@@ -249,6 +249,7 @@
                 react.createElement(
                     "select",
                     {
+                        className: "main-dropDown-dropDown",
                         value,
                         onChange: setValueCallback,
                     },
